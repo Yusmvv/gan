@@ -1,31 +1,939 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Synthwave Beat Clicker</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Studio: Музыкальный Кликер</title>
+    <style>
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #00ffaa;
+            --text: #ffffff;
+            --bg: #121212;
+            --card-bg: #1e1e2e;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+        
+        header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stats {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .main-clicker {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .clicker-btn {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(106, 17, 203, 0.5);
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .clicker-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .clicker-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .clicker-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+            opacity: 0;
+            transform: scale(0);
+        }
+        
+        .clicker-btn.active::after {
+            animation: clickEffect 0.5s forwards;
+        }
+        
+        @keyframes clickEffect {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+        
+        .upgrades-section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .upgrade {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+        
+        .upgrade:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .upgrade-info {
+            flex: 1;
+        }
+        
+        .upgrade-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .upgrade-desc {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .upgrade-price {
+            font-weight: bold;
+            color: var(--accent);
+            margin-left: 15px;
+            white-space: nowrap;
+        }
+        
+        .buy-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: all 0.2s;
+        }
+        
+        .buy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(106, 17, 203, 0.3);
+        }
+        
+        .buy-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .producers {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .producer {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .producer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .producer-name {
+            font-weight: bold;
+        }
+        
+        .producer-count {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .producer-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .producer-cps {
+            font-size: 12px;
+            color: var(--accent);
+        }
+        
+        .producer-price {
+            font-weight: bold;
+        }
+        
+        .buy-producer {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .buy-producer:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .cookie-count {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .cps {
+            font-size: 16px;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+        
+        .floating-text {
+            position: absolute;
+            color: white;
+            font-weight: bold;
+            pointer-events: none;
+            animation: floatUp 1s forwards;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-50px); opacity: 0; }
+        }
+        
+        .tab-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .tab:first-child {
+            border-radius: 10px 0 0 10px;
+        }
+        
+        .tab:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .achievement {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        .achievement.locked {
+            opacity: 0.5;
+        }
+        
+        .achievement-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            font-size: 20px;
+        }
+        
+        .achievement-info {
+            flex: 1;
+        }
+        
+        .achievement-name {
+            font-weight: bold;
+        }
+        
+        .achievement-desc {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .achievement-reward {
+            font-size: 12px;
+            color: var(--accent);
+            margin-left: 15px;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .upgrades-section {
+                max-height: none;
+            }
+            
+            .producers {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Synthwave Beat Clicker</h1>
-    <div id="beat-button" class="neon-button">Создать бит</div>
-    <div id="beats-count">Битов: 0</div>
-
-    <div class="upgrades">
-      <h2>Апгрейды</h2>
-      <button id="studio-upgrade" class="upgrade-btn" disabled>
-        Улучшить студию (Цена: 50)
-      </button>
-      <button id="assistant-upgrade" class="upgrade-btn" disabled>
-        Нанять ассистента (Цена: 200)
-      </button>
-      <button id="inspiration-upgrade" class="upgrade-btn" disabled>
-        Усилитель вдохновения (Цена: 500)
-      </button>
+    <div class="container">
+        <header>
+            <h1>Cookie Studio</h1>
+            <div class="cps">Бит/сек: <span id="cpsValue">0</span></div>
+        </header>
+        
+        <main class="stats">
+            <div class="cookie-count" id="cookieCount">0 бит</div>
+            
+            <div class="main-clicker">
+                <button class="clicker-btn" id="clicker">
+                    <span id="clickPower">1</span> бит/клик
+                </button>
+            </div>
+            
+            <div class="tab-container">
+                <button class="tab active" data-tab="producers">Производители</button>
+                <button class="tab" data-tab="upgrades">Улучшения</button>
+                <button class="tab" data-tab="achievements">Достижения</button>
+            </div>
+            
+            <div class="section active" id="producers-section">
+                <div class="producers" id="producersContainer">
+                    <!-- Производители будут добавлены через JS -->
+                </div>
+            </div>
+            
+            <div class="section" id="upgrades-section">
+                <div class="upgrades-section" id="upgradesContainer">
+                    <!-- Улучшения будут добавлены через JS -->
+                </div>
+            </div>
+            
+            <div class="section" id="achievements-section">
+                <div class="upgrades-section" id="achievementsContainer">
+                    <!-- Достижения будут добавлены через JS -->
+                </div>
+            </div>
+        </main>
+        
+        <aside class="upgrades-section">
+            <h3>Статистика</h3>
+            <p>Всего битов: <span id="totalCookies">0</span></p>
+            <p>Кликов: <span id="totalClicks">0</span></p>
+            <p>Время игры: <span id="playTime">00:00:00</span></p>
+            
+            <h3 style="margin-top: 20px;">Последние события</h3>
+            <div id="eventLog" style="font-size: 12px; max-height: 200px; overflow-y: auto;">
+                <!-- Лог событий -->
+            </div>
+        </aside>
     </div>
-  </div>
 
-  <script src="script.js"></script>
+    <script>
+        // Игровые данные
+        const game = {
+            cookies: 0,
+            totalCookies: 0,
+            cookiesPerSecond: 0,
+            clickPower: 1,
+            totalClicks: 0,
+            playTime: 0,
+            producers: [
+                { id: 'mic', name: 'Микрофон', basePrice: 15, baseCps: 0.1, owned: 0, unlocked: true },
+                { id: 'guitar', name: 'Гитара', basePrice: 100, baseCps: 0.5, owned: 0, unlocked: false },
+                { id: 'drums', name: 'Барабаны', basePrice: 500, baseCps: 2, owned: 0, unlocked: false },
+                { id: 'synth', name: 'Синтезатор', basePrice: 3000, baseCps: 10, owned: 0, unlocked: false },
+                { id: 'studio', name: 'Студия', basePrice: 10000, baseCps: 40, owned: 0, unlocked: false },
+                { id: 'band', name: 'Группа', basePrice: 40000, baseCps: 100, owned: 0, unlocked: false },
+                { id: 'label', name: 'Лейбл', basePrice: 200000, baseCps: 400, owned: 0, unlocked: false },
+                { id: 'festival', name: 'Фестиваль', basePrice: 1666666, baseCps: 6666, owned: 0, unlocked: false },
+                { id: 'satellite', name: 'Спутник', basePrice: 123456789, baseCps: 98765, owned: 0, unlocked: false }
+            ],
+            upgrades: [
+                { id: 'better_mic', name: 'Лучший микрофон', description: 'Увеличивает мощность кликов на 0.1', price: 100, effect: () => { game.clickPower += 0.1 }, purchased: false, unlocked: true },
+                { id: 'pop_filter', name: 'Поп-фильтр', description: 'Увеличивает мощность кликов на 0.2', price: 500, effect: () => { game.clickPower += 0.2 }, purchased: false, unlocked: true },
+                { id: 'golden_mic', name: 'Золотой микрофон', description: 'Увеличивает мощность кликов на 0.5', price: 2000, effect: () => { game.clickPower += 0.5 }, purchased: false, unlocked: true },
+                { id: 'auto_tune', name: 'Автотюн', description: 'Увеличивает мощность кликов на 1', price: 5000, effect: () => { game.clickPower += 1 }, purchased: false, unlocked: true },
+                { id: 'mic_stand', name: 'Стойка для микрофона', description: 'Гитары производят в 2 раза больше', price: 10000, effect: () => { 
+                    game.producers.find(p => p.id === 'guitar').baseCps *= 2 
+                }, purchased: false, unlocked: false },
+                { id: 'amplifier', name: 'Усилитель', description: 'Барабаны производят в 2 раза больше', price: 50000, effect: () => { 
+                    game.producers.find(p => p.id === 'drums').baseCps *= 2 
+                }, purchased: false, unlocked: false },
+                { id: 'effects_pedal', name: 'Педаль эффектов', description: 'Синтезаторы производят в 2 раза больше', price: 200000, effect: () => { 
+                    game.producers.find(p => p.id === 'synth').baseCps *= 2 
+                }, purchased: false, unlocked: false },
+                { id: 'acoustic_panel', name: 'Акустические панели', description: 'Студии производят в 2 раза больше', price: 1000000, effect: () => { 
+                    game.producers.find(p => p.id === 'studio').baseCps *= 2 
+                }, purchased: false, unlocked: false },
+                { id: 'touring_van', name: 'Тур-автобус', description: 'Группы производят в 2 раза больше', price: 5000000, effect: () => { 
+                    game.producers.find(p => p.id === 'band').baseCps *= 2 
+                }, purchased: false, unlocked: false },
+                { id: 'marketing', name: 'Маркетинг', description: 'Лейблы производят в 2 раза больше', price: 20000000, effect: () => { 
+                    game.producers.find(p => p.id === 'label').baseCps *= 2 
+                }, purchased: false, unlocked: false },
+                { id: 'sponsorship', name: 'Спонсорство', description: 'Фестивали производят в 2 раза больше', price: 100000000, effect: () => { 
+                    game.producers.find(p => p.id === 'festival').baseCps *= 2 
+                }, purchased: false, unlocked: false },
+                { id: 'global_coverage', name: 'Глобальное покрытие', description: 'Спутники производят в 2 раза больше', price: 500000000, effect: () => { 
+                    game.producers.find(p => p.id === 'satellite').baseCps *= 2 
+                }, purchased: false, unlocked: false },
+                { id: 'rhythm_course', name: 'Курс ритма', description: 'Клики дают на 5% больше', price: 1000, effect: () => { 
+                    game.clickPower *= 1.05 
+                }, purchased: false, unlocked: true },
+                { id: 'harmony_course', name: 'Курс гармонии', description: 'Клики дают на 10% больше', price: 5000, effect: () => { 
+                    game.clickPower *= 1.1 
+                }, purchased: false, unlocked: true },
+                { id: 'master_class', name: 'Мастер-класс', description: 'Клики дают на 25% больше', price: 25000, effect: () => { 
+                    game.clickPower *= 1.25 
+                }, purchased: false, unlocked: true },
+                { id: 'vocal_coach', name: 'Вокальный тренер', description: 'Микрофоны производят в 2 раза больше', price: 5000, effect: () => { 
+                    game.producers.find(p => p.id === 'mic').baseCps *= 2 
+                }, purchased: false, unlocked: true },
+                { id: 'guitar_lessons', name: 'Уроки гитары', description: 'Гитары производят на 50% больше', price: 15000, effect: () => { 
+                    game.producers.find(p => p.id === 'guitar').baseCps *= 1.5 
+                }, purchased: false, unlocked: false },
+                { id: 'drum_lessons', name: 'Уроки барабанов', description: 'Барабаны производят на 50% больше', price: 75000, effect: () => { 
+                    game.producers.find(p => p.id === 'drums').baseCps *= 1.5 
+                }, purchased: false, unlocked: false },
+                { id: 'music_theory', name: 'Теория музыки', description: 'Все производители работают на 5% лучше', price: 100000, effect: () => { 
+                    game.producers.forEach(p => p.baseCps *= 1.05) 
+                }, purchased: false, unlocked: false },
+                { id: 'gold_record', name: 'Золотой диск', description: 'Все производители работают на 10% лучше', price: 1000000, effect: () => { 
+                    game.producers.forEach(p => p.baseCps *= 1.1) 
+                }, purchased: false, unlocked: false },
+                { id: 'platinum_record', name: 'Платиновый диск', description: 'Все производители работают на 15% лучше', price: 10000000, effect: () => { 
+                    game.producers.forEach(p => p.baseCps *= 1.15) 
+                }, purchased: false, unlocked: false },
+                { id: 'diamond_record', name: 'Бриллиантовый диск', description: 'Все производители работают на 20% лучше', price: 100000000, effect: () => { 
+                    game.producers.forEach(p => p.baseCps *= 1.2) 
+                }, purchased: false, unlocked: false },
+                { id: 'lucky_star', name: 'Счастливая звезда', description: 'Шанс 10% получить 10x битов при клике', price: 500000, effect: () => { 
+                    // Эффект реализован в функции клика
+                }, purchased: false, unlocked: false },
+                { id: 'diva', name: 'Дива', description: 'Шанс 5% получить 50x битов при клике', price: 5000000, effect: () => { 
+                    // Эффект реализован в функции клика
+                }, purchased: false, unlocked: false },
+                { id: 'rock_god', name: 'Бог рока', description: 'Шанс 1% получить 100x битов при клике', price: 50000000, effect: () => { 
+                    // Эффект реализован в функции клика
+                }, purchased: false, unlocked: false }
+            ],
+            achievements: [
+                { id: 'first_click', name: 'Первый шаг', description: 'Сделайте первый клик', reward: '+0.1 к мощности кликов', condition: () => game.totalClicks >= 1, unlocked: false, effect: () => { game.clickPower += 0.1 } },
+                { id: 'hundred_clicks', name: 'Начинающий артист', description: 'Сделайте 100 кликов', reward: '+1 к мощности кликов', condition: () => game.totalClicks >= 100, unlocked: false, effect: () => { game.clickPower += 1 } },
+                { id: 'thousand_clicks', name: 'Опытный музыкант', description: 'Сделайте 1,000 кликов', reward: 'Все клики +10%', condition: () => game.totalClicks >= 1000, unlocked: false, effect: () => { game.clickPower *= 1.1 } },
+                { id: 'first_producer', name: 'Первая запись', description: 'Купите первого производителя', reward: 'Микрофоны +50%', condition: () => game.producers[0].owned >= 1, unlocked: false, effect: () => { game.producers[0].baseCps *= 1.5 } },
+                { id: 'hundred_producers', name: 'Музыкальная фабрика', description: 'Иметь 100 производителей', reward: 'Все производители +5%', condition: () => game.producers.reduce((sum, p) => sum + p.owned, 0) >= 100, unlocked: false, effect: () => { game.producers.forEach(p => p.baseCps *= 1.05) } },
+                { id: 'million_cookies', name: 'Популярный хит', description: 'Заработайте 1,000,000 битов', reward: 'Все производители +10%', condition: () => game.totalCookies >= 1000000, unlocked: false, effect: () => { game.producers.forEach(p => p.baseCps *= 1.1) } },
+                { id: 'billion_cookies', name: 'Мегазвезда', description: 'Заработайте 1,000,000,000 битов', reward: 'Все производители +25%', condition: () => game.totalCookies >= 1000000000, unlocked: false, effect: () => { game.producers.forEach(p => p.baseCps *= 1.25) } },
+                { id: 'all_upgrades', name: 'Легенда звука', description: 'Купите все улучшения', reward: 'Все производители +50%', condition: () => game.upgrades.every(u => u.purchased), unlocked: false, effect: () => { game.producers.forEach(p => p.baseCps *= 1.5) } }
+            ],
+            eventLog: []
+        };
+
+        // DOM элементы
+        const cookieCountEl = document.getElementById('cookieCount');
+        const cpsValueEl = document.getElementById('cpsValue');
+        const clickerBtn = document.getElementById('clicker');
+        const clickPowerEl = document.getElementById('clickPower');
+        const producersContainer = document.getElementById('producersContainer');
+        const upgradesContainer = document.getElementById('upgradesContainer');
+        const achievementsContainer = document.getElementById('achievementsContainer');
+        const totalCookiesEl = document.getElementById('totalCookies');
+        const totalClicksEl = document.getElementById('totalClicks');
+        const playTimeEl = document.getElementById('playTime');
+        const eventLogEl = document.getElementById('eventLog');
+        const tabs = document.querySelectorAll('.tab');
+        const sections = document.querySelectorAll('.section');
+
+        // Инициализация игры
+        function initGame() {
+            renderProducers();
+            renderUpgrades();
+            renderAchievements();
+            updateUI();
+            
+            // Загрузка сохранения
+            loadGame();
+            
+            // Запуск игрового цикла
+            setInterval(gameLoop, 1000);
+            setInterval(saveGame, 30000);
+            
+            // Обработчики событий
+            clickerBtn.addEventListener('click', handleClick);
+            
+            // Обработчики вкладок
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    sections.forEach(section => section.classList.remove('active'));
+                    document.getElementById(`${tab.dataset.tab}-section`).classList.add('active');
+                });
+            });
+        }
+
+        // Игровой цикл
+        function gameLoop() {
+            // Увеличение времени игры
+            game.playTime++;
+            
+            // Обновление времени
+            updatePlayTime();
+            
+            // Производство битов
+            produceCookies();
+            
+            // Проверка достижений
+            checkAchievements();
+            
+            // Обновление интерфейса
+            updateUI();
+            
+            // Разблокировка новых элементов
+            unlockItems();
+        }
+
+        // Обработка клика
+        function handleClick(e) {
+            // Анимация клика
+            clickerBtn.classList.add('active');
+            setTimeout(() => clickerBtn.classList.remove('active'), 100);
+            
+            // Создание плавающего текста
+            createFloatingText(e.clientX, e.clientY, `+${formatNumber(game.clickPower)}`);
+            
+            // Получение битов
+            let cookiesEarned = game.clickPower;
+            
+            // Проверка улучшений на случайные бонусы
+            if (game.upgrades.find(u => u.id === 'lucky_star')?.purchased && Math.random() < 0.1) {
+                cookiesEarned *= 10;
+                createFloatingText(e.clientX, e.clientY - 30, 'LUCKY! x10', '#ffcc00');
+                addToEventLog('Счастливая звезда: x10 битов!');
+            }
+            
+            if (game.upgrades.find(u => u.id === 'diva')?.purchased && Math.random() < 0.05) {
+                cookiesEarned *= 50;
+                createFloatingText(e.clientX, e.clientY - 60, 'DIVA! x50', '#ff9900');
+                addToEventLog('Дива: x50 битов!');
+            }
+            
+            if (game.upgrades.find(u => u.id === 'rock_god')?.purchased && Math.random() < 0.01) {
+                cookiesEarned *= 100;
+                createFloatingText(e.clientX, e.clientY - 90, 'ROCK GOD! x100', '#ff6600');
+                addToEventLog('Бог рока: x100 битов!');
+            }
+            
+            // Добавление битов
+            game.cookies += cookiesEarned;
+            game.totalCookies += cookiesEarned;
+            game.totalClicks++;
+            
+            // Обновление интерфейса
+            updateUI();
+        }
+
+        // Производство битов
+        function produceCookies() {
+            let cps = 0;
+            
+            game.producers.forEach(producer => {
+                if (producer.owned > 0) {
+                    const produced = producer.owned * producer.baseCps;
+                    game.cookies += produced;
+                    game.totalCookies += produced;
+                    cps += produced;
+                }
+            });
+            
+            game.cookiesPerSecond = cps;
+        }
+
+        // Покупка производителя
+        function buyProducer(id) {
+            const producer = game.producers.find(p => p.id === id);
+            const price = getProducerPrice(producer);
+            
+            if (game.cookies >= price) {
+                game.cookies -= price;
+                producer.owned++;
+                addToEventLog(`Куплен(а) ${producer.name} за ${formatNumber(price)} битов`);
+                updateUI();
+            }
+        }
+
+        // Покупка улучшения
+        function buyUpgrade(id) {
+            const upgrade = game.upgrades.find(u => u.id === id);
+            
+            if (game.cookies >= upgrade.price && !upgrade.purchased) {
+                game.cookies -= upgrade.price;
+                upgrade.purchased = true;
+                upgrade.effect();
+                addToEventLog(`Куплено улучшение: ${upgrade.name}`);
+                updateUI();
+            }
+        }
+
+        // Получение цены производителя
+        function getProducerPrice(producer) {
+            return Math.floor(producer.basePrice * Math.pow(1.15, producer.owned));
+        }
+
+        // Разблокировка новых элементов
+        function unlockItems() {
+            // Производители
+            game.producers.forEach((producer, i) => {
+                if (!producer.unlocked && i > 0) {
+                    const prevProducer = game.producers[i - 1];
+                    if (prevProducer.owned >= (i === 1 ? 5 : i === 2 ? 3 : 1)) {
+                        producer.unlocked = true;
+                        addToEventLog(`Разблокирован(а) ${producer.name}!`);
+                        renderProducers();
+                    }
+                }
+            });
+            
+            // Улучшения
+            game.upgrades.forEach(upgrade => {
+                if (!upgrade.unlocked) {
+                    if (upgrade.id === 'guitar_lessons' && game.producers.find(p => p.id === 'guitar').owned >= 5) {
+                        upgrade.unlocked = true;
+                        addToEventLog(`Доступно новое улучшение: ${upgrade.name}`);
+                        renderUpgrades();
+                    }
+                    // Другие условия разблокировки...
+                }
+            });
+        }
+
+        // Проверка достижений
+        function checkAchievements() {
+            game.achievements.forEach(achievement => {
+                if (!achievement.unlocked && achievement.condition()) {
+                    achievement.unlocked = true;
+                    achievement.effect();
+                    addToEventLog(`Достижение получено: ${achievement.name}!`);
+                    renderAchievements();
+                }
+            });
+        }
+
+        // Обновление интерфейса
+        function updateUI() {
+            // Обновление счетчиков
+            cookieCountEl.textContent = `${formatNumber(game.cookies)} бит`;
+            cpsValueEl.textContent = formatNumber(game.cookiesPerSecond);
+            clickPowerEl.textContent = formatNumber(game.clickPower);
+            totalCookiesEl.textContent = formatNumber(game.totalCookies);
+            totalClicksEl.textContent = formatNumber(game.totalClicks);
+            
+            // Обновление кнопок производителей
+            document.querySelectorAll('.buy-producer').forEach(btn => {
+                const producerId = btn.dataset.producer;
+                const producer = game.producers.find(p => p.id === producerId);
+                const price = getProducerPrice(producer);
+                
+                btn.textContent = `Купить (${formatNumber(price)})`;
+                btn.disabled = game.cookies < price;
+            });
+            
+            // Обновление кнопок улучшений
+            document.querySelectorAll('.buy-btn').forEach(btn => {
+                const upgradeId = btn.dataset.upgrade;
+                const upgrade = game.upgrades.find(u => u.id === upgradeId);
+                
+                btn.disabled = game.cookies < upgrade.price || upgrade.purchased;
+            });
+        }
+
+        // Обновление времени игры
+        function updatePlayTime() {
+            const hours = Math.floor(game.playTime / 3600).toString().padStart(2, '0');
+            const minutes = Math.floor((game.playTime % 3600) / 60).toString().padStart(2, '0');
+            const seconds = (game.playTime % 60).toString().padStart(2, '0');
+            playTimeEl.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Добавление в лог событий
+        function addToEventLog(message) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            game.eventLog.unshift(`[${timeString}] ${message}`);
+            
+            if (game.eventLog.length > 10) {
+                game.eventLog.pop();
+            }
+            
+            renderEventLog();
+        }
+
+        // Создание плавающего текста
+        function createFloatingText(x, y, text, color = '#ffffff') {
+            const floatingText = document.createElement('div');
+            floatingText.className = 'floating-text';
+            floatingText.textContent = text;
+            floatingText.style.color = color;
+            floatingText.style.left = `${x}px`;
+            floatingText.style.top = `${y}px`;
+            
+            document.body.appendChild(floatingText);
+            
+            setTimeout(() => {
+                floatingText.remove();
+            }, 1000);
+        }
+
+        // Рендер производителей
+        function renderProducers() {
+            producersContainer.innerHTML = '';
+            
+            game.producers.forEach(producer => {
+                if (!producer.unlocked) return;
+                
+                const price = getProducerPrice(producer);
+                const cps = producer.baseCps * producer.owned;
+                
+                const producerEl = document.createElement('div');
+                producerEl.className = 'producer';
+                producerEl.innerHTML = `
+                    <div class="producer-header">
+                        <div class="producer-name">${producer.name}</div>
+                        <div class="producer-count">${producer.owned}</div>
+                    </div>
+                    <div class="producer-info">
+                        <div class="producer-cps">${formatNumber(cps)} бит/сек</div>
+                        <div class="producer-price">${formatNumber(price)} бит</div>
+                    </div>
+                    <button class="buy-producer" data-producer="${producer.id}">
+                        Купить (${formatNumber(price)})
+                    </button>
+                `;
+                
+                producerEl.querySelector('.buy-producer').addEventListener('click', () => buyProducer(producer.id));
+                producersContainer.appendChild(producerEl);
+            });
+        }
+
+        // Рендер улучшений
+        function renderUpgrades() {
+            upgradesContainer.innerHTML = '';
+            
+            game.upgrades.forEach(upgrade => {
+                if (!upgrade.unlocked) return;
+                
+                const upgradeEl = document.createElement('div');
+                upgradeEl.className = 'upgrade';
+                upgradeEl.innerHTML = `
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">${upgrade.name}</div>
+                        <div class="upgrade-desc">${upgrade.description}</div>
+                    </div>
+                    <div class="upgrade-price">${formatNumber(upgrade.price)} ₿</div>
+                    <button class="buy-btn" data-upgrade="${upgrade.id}" ${upgrade.purchased ? 'disabled' : ''}>
+                        ${upgrade.purchased ? 'Куплено' : 'Купить'}
+                    </button>
+                `;
+                
+                if (!upgrade.purchased) {
+                    upgradeEl.querySelector('.buy-btn').addEventListener('click', () => buyUpgrade(upgrade.id));
+                }
+                
+                upgradesContainer.appendChild(upgradeEl);
+            });
+        }
+
+        // Рендер достижений
+        function renderAchievements() {
+            achievementsContainer.innerHTML = '';
+            
+            game.achievements.forEach(achievement => {
+                const achievementEl = document.createElement('div');
+                achievementEl.className = `achievement ${achievement.unlocked ? '' : 'locked'}`;
+                achievementEl.innerHTML = `
+                    <div class="achievement-icon">${achievement.unlocked ? '🏆' : '🔒'}</div>
+                    <div class="achievement-info">
+                        <div class="achievement-name">${achievement.name}</div>
+                        <div class="achievement-desc">${achievement.description}</div>
+                    </div>
+                    <div class="achievement-reward">${achievement.reward}</div>
+                `;
+                
+                achievementsContainer.appendChild(achievementEl);
+            });
+        }
+
+        // Рендер лога событий
+        function renderEventLog() {
+            eventLogEl.innerHTML = game.eventLog.map(event => `<div>${event}</div>`).join('');
+        }
+
+        // Форматирование чисел
+        function formatNumber(num) {
+            if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(2) + ' млрд';
+            }
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(2) + ' млн';
+            }
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + ' тыс';
+            }
+            return Math.floor(num).toString();
+        }
+
+        // Сохранение игры
+        function saveGame() {
+            const saveData = {
+                cookies: game.cookies,
+                totalCookies: game.totalCookies,
+                clickPower: game.clickPower,
+                totalClicks: game.totalClicks,
+                playTime: game.playTime,
+                producers: game.producers.map(p => ({ id: p.id, owned: p.owned, unlocked: p.unlocked })),
+                upgrades: game.upgrades.map(u => ({ id: u.id, purchased: u.purchased, unlocked: u.unlocked })),
+                achievements: game.achievements.map(a => ({ id: a.id, unlocked: a.unlocked })),
+                version: 1
+            };
+            
+            localStorage.setItem('cookieStudioSave', JSON.stringify(saveData));
+            addToEventLog('Игра сохранена');
+        }
+
+        // Загрузка игры
+        function loadGame() {
+            const saveData = JSON.parse(localStorage.getItem('cookieStudioSave'));
+            
+            if (saveData) {
+                game.cookies = saveData.cookies || 0;
+                game.totalCookies = saveData.totalCookies || 0;
+                game.clickPower = saveData.clickPower || 1;
+                game.totalClicks = saveData.totalClicks || 0;
+                game.playTime = saveData.playTime || 0;
+                
+                // Загрузка производителей
+                if (saveData.producers) {
+                    saveData.producers.forEach(savedProducer => {
+                        const producer = game.producers.find(p => p.id === savedProducer.id);
+                        if (producer) {
+                            producer.owned = savedProducer.owned || 0;
+                            producer.unlocked = savedProducer.unlocked || false;
+                        }
+                    });
+                }
+                
+                // Загрузка улучшений
+                if (saveData.upgrades) {
+                    saveData.upgrades.forEach(savedUpgrade => {
+                        const upgrade = game.upgrades.find(u => u.id === savedUpgrade.id);
+                        if (upgrade) {
+                            upgrade.purchased = savedUpgrade.purchased || false;
+                            upgrade.unlocked = savedUpgrade.unlocked || false;
+                            
+                            // Применяем эффекты купленных улучшений
+                            if (upgrade.purchased) {
+                                upgrade.effect();
+                            }
+                        }
+                    });
+                }
+                
+                // Загрузка достижений
+                if (saveData.achievements) {
+                    saveData.achievements.forEach(savedAchievement => {
+                        const achievement = game.achievements.find(a => a.id === savedAchievement.id);
+                        if (achievement) {
+                            achievement.unlocked = savedAchievement.unlocked || false;
+                        }
+                    });
+                }
+                
+                addToEventLog('Игра загружена');
+                updateUI();
+                renderProducers();
+                renderUpgrades();
+                renderAchievements();
+            }
+        }
+
+        // Запуск игры
+        initGame();
+    </script>
 </body>
 </html>
