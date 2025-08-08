@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #1f0055, #5b0060);
+  font-family: 'Orbitron', monospace;
+  color: #fff;
+  text-align: center;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 0 20px #ff00c8, 0 0 40px #ff00c8 inset;
+  width: 320px;
+}
+
+h1 {
+  margin-bottom: 1rem;
+  text-shadow: 0 0 10px #ff00c8;
+}
+
+#beat-button {
+  font-size: 1.5rem;
+  padding: 1rem 2rem;
+  margin: 1rem 0;
+  cursor: pointer;
+  border: 2px solid #ff00c8;
+  border-radius: 10px;
+  color: #ff00c8;
+  text-shadow: 0 0 6px #ff00c8;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+#beat-button:hover {
+  background: #ff00c8;
+  color: #1f0055;
+  box-shadow: 0 0 20px #ff00c8;
+}
+
+.neon-button {
+  animation: neonGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes neonGlow {
+  from {
+    text-shadow:
+      0 0 5px #ff00c8,
+      0 0 10px #ff00c8,
+      0 0 20px #ff00c8,
+      0 0 40px #ff00c8;
+  }
+  to {
+    text-shadow:
+      0 0 10px #ff00c8,
+      0 0 20px #ff00c8,
+      0 0 30px #ff00c8,
+      0 0 50px #ff00c8;
+  }
+}
+
+#beats-count {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 8px #ff00c8;
+}
+
+.upgrades {
+  text-align: left;
+}
+
+.upgrades h2 {
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 6px #ff00c8;
+}
+
+.upgrade-btn {
+  width: 100%;
+  padding: 0.7rem;
+  margin-bottom: 0.5rem;
+  border: 2px solid #ff00c8;
+  background: transparent;
+  color: #ff00c8;
+  font-family: 'Orbitron', monospace;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+  user-select: none;
+}
+
+.upgrade-btn:disabled {
+  border-color: #666;
+  color: #666;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.upgrade-btn:not(:disabled):hover {
+  background: #ff00c8;
+  color: #1f0055;
+  box-shadow: 0 0 10px #ff00c8;
+}
